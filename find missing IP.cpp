@@ -29,7 +29,7 @@ using std::vector;
 
 // @include
 int FindMissingElement(ifstream* ifs) {
-  vector<size_t> counter(1 << 16, 0);
+  vector<int> counter(1 << 16, 0);
   unsigned int x;
   while (*ifs >> x) {
     ++counter[x >> 16];
@@ -38,18 +38,21 @@ int FindMissingElement(ifstream* ifs) {
   for (int i = 0; i < counter.size(); ++i) {
     // Finds one bucket contains less than (1 << 16) elements.
     if (counter[i] < (1 << 16)) {
-      bitset<(1 << 16)> bit_vec;
+      //bitset<(1 << 16)> bit_vec;
+      vector<bool> bit_vec(1<<16);
       ifs->clear();
       ifs->seekg(0, ios::beg);
       while (*ifs >> x) {
         if (i == (x >> 16)) {
-          bit_vec.set(((1 << 16) - 1) & x);  // Gets the lower 16 bits of x.
+          //bit_vec.set(((1 << 16) - 1) & x);  // Gets the lower 16 bits of x.
+          bit_vec[((1 << 16) - 1) & x] = 1;
         }
       }
       ifs->close();
 
       for (int j = 0; j < (1 << 16); ++j) {
-        if (bit_vec.test(j) == 0) {
+        //if (bit_vec.test(j) == 0) {
+        if (bit_vec[j] == 0) {
           return (i << 16) | j;
         }
       }
@@ -72,7 +75,7 @@ int main(int argc, char* argv[]) {
   n = 1000;
   //vector<int> A(1000000000);
   vector<int> A(10000);
-      iota(A.begin(), A.end(), 0);
+      iota(A.begin(), A.end(), 0); // 0,1,2,...
   unordered_set<int> hash;
   ofstream ofs("missing.txt");
   for (int i = 0; i < n; ++i) {
