@@ -15,7 +15,6 @@ using std::cout;
 using std::default_random_engine;
 using std::endl;
 using std::ifstream;
-using std::invalid_argument;
 using std::ios;
 using std::numeric_limits;
 using std::ofstream;
@@ -29,6 +28,7 @@ using std::vector;
 int FindMissingElement(ifstream* ifs) {
   vector<int> counter(1 << 16, 0); // 2^16 buckets
   unsigned int x;
+  
   while (*ifs >> x) {
     ++counter[x >> 16]; // only care about first 16 bits
   }
@@ -36,7 +36,7 @@ int FindMissingElement(ifstream* ifs) {
       if (counter[i] < 1<<16) { // this bucket has missing IP
           ifs->clear();
           ifs->seekg(0,ios::beg);
-          vector<bool> bits(16);
+          vector<bool> bits(1<<16);
           while (*ifs>>x) {
               // only care about last 16 bits
               unsigned int y = ((1<<16)-1) & x;
@@ -44,11 +44,13 @@ int FindMissingElement(ifstream* ifs) {
           }
           for (int k=0; k<1<<16; ++k) {
               if (bits[k]==0) {
-                  return i;
+                  return (i<<16)|k;
               }
           }
       }
   }
+  
+  throw std::logic_error("no missing element");
 }
 // @exclude
 
