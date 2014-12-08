@@ -1,6 +1,4 @@
-// Copyright (c) 2013 Elements of Programming Interviews. All rights reserved.
 
-#include <bitset>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -12,7 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
-using std::bitset;
+
 using std::cout;
 using std::default_random_engine;
 using std::endl;
@@ -29,38 +27,28 @@ using std::vector;
 
 // @include
 int FindMissingElement(ifstream* ifs) {
-  vector<int> counter(1 << 16, 0);
+  vector<int> counter(1 << 16, 0); // 2^16 buckets
   unsigned int x;
   while (*ifs >> x) {
-    ++counter[x >> 16];
+    ++counter[x >> 16]; // only care about first 16 bits
   }
-
-  for (int i = 0; i < counter.size(); ++i) {
-    // Finds one bucket contains less than (1 << 16) elements.
-    if (counter[i] < (1 << 16)) {
-      //bitset<(1 << 16)> bit_vec;
-      vector<bool> bit_vec(1<<16);
-      ifs->clear();
-      ifs->seekg(0, ios::beg);
-      while (*ifs >> x) {
-        if (i == (x >> 16)) {
-          //bit_vec.set(((1 << 16) - 1) & x);  // Gets the lower 16 bits of x.
-          bit_vec[((1 << 16) - 1) & x] = 1;
-        }
+  for (int i=0; i<1<<16; ++i) {
+      if (counter[i] < 1<<16) { // this bucket has missing IP
+          ifs->clear();
+          ifs->seekg(0,ios::beg);
+          vector<bool> bits(16);
+          while (*ifs>>x) {
+              // only care about last 16 bits
+              unsigned int y = ((1<<16)-1) & x;
+              bits[y] = 1;
+          }
+          for (int k=0; k<1<<16; ++k) {
+              if (bits[k]==0) {
+                  return i;
+              }
+          }
       }
-      ifs->close();
-
-      for (int j = 0; j < (1 << 16); ++j) {
-        //if (bit_vec.test(j) == 0) {
-        if (bit_vec[j] == 0) {
-          return (i << 16) | j;
-        }
-      }
-    }
   }
-  // @exclude
-  throw invalid_argument("no missing element");
-  // @include
 }
 // @exclude
 
