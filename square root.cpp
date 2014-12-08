@@ -17,7 +17,22 @@ int Compare(double a, double b);
 
 // @include
 double SquareRoot(double x) {
-
+    if (x==1.0)
+        return 1.0;
+    else if (x > 1.0) {
+        double upper_bound = x;
+        double lower_bound = 1.0;
+        double t = lower_bound + 0.5*(upper_bound-lower_bound);
+        while (Compare(t*t,x)!=0) {
+            if (t*t < x)
+                t = 0.5*upper_bound + 0.5*t;
+            else if (t*t > x)
+                t = 0.5*lower_bound + 0.5*t;
+            else
+                return t;
+        }
+        return t;
+    }
 }
 
 // 0 means equal, -1 means smaller, and 1 means larger.
@@ -37,7 +52,7 @@ int main(int argc, char* argv[]) {
     if (argc == 2) {
       x = atof(argv[1]);
     } else {
-      uniform_real_distribution<double> dis(0.0, 100000000.0);
+      uniform_real_distribution<double> dis(0.0, 10000.0);
       x = dis(gen);
     }
     double res[2];
