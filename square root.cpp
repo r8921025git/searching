@@ -24,10 +24,14 @@ double SquareRoot(double x) {
         double lower_bound = 1.0;
         double t = lower_bound + 0.5*(upper_bound-lower_bound);
         while (Compare(t*t,x)!=0) {
-            if (t*t < x)
-                t = 0.5*upper_bound + 0.5*t;
-            else if (t*t > x)
-                t = 0.5*lower_bound + 0.5*t;
+            if (t*t < x) {
+                lower_bound = t;
+                t = lower_bound + 0.5*(upper_bound-lower_bound);
+            }
+            else if (t*t > x) {
+                upper_bound = t;
+                t = lower_bound + 0.5*(upper_bound-lower_bound);
+            }
             else
                 return t;
         }
